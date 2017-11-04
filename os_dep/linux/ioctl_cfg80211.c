@@ -6120,7 +6120,10 @@ static void rtw_cfg80211_preinit_wiphy(_adapter *adapter, struct wiphy *wiphy) {
 	/* wiphy->flags |= WIPHY_FLAG_OFFCHAN_TX | WIPHY_FLAG_HAVE_AP_SME; */
 #endif
 
-#if defined(CONFIG_PM) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 0, 0))
+#if defined(CONFIG_PM) && (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 0, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0))
+	/* Later kernel 4.12, concurrently multiple scheduled scan is default.
+	 * See https://github.com/torvalds/linux/commit/ca986ad9bcd3893c8b0b4cc2cafcc8cf1554409c
+	 */
 	wiphy->flags |= WIPHY_FLAG_SUPPORTS_SCHED_SCAN;
 #ifdef CONFIG_PNO_SUPPORT
 	wiphy->max_sched_scan_ssids = MAX_PNO_LIST_COUNT;
