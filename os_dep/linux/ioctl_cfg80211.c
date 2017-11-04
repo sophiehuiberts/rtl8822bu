@@ -3614,7 +3614,15 @@ static int rtw_cfg80211_add_monitor_if(_adapter *padapter, char *name, struct ne
 	mon_ndev->type = ARPHRD_IEEE80211_RADIOTAP;
 	strncpy(mon_ndev->name, name, IFNAMSIZ);
 	mon_ndev->name[IFNAMSIZ - 1] = 0;
+#if KERNEL_VERSION(4, 12, 0) < LINUX_VERSION_CODE
+	/* struct `net_device` was changed by commit [cf124db5] in Linux kernel.
+	 * See https://github.com/torvalds/linux/commit/cf124db566e6b036b8bcbe8decbed740bdfac8c6
+	 */
+	mon_ndev->needs_free_netdev = false;
+	mon_ndev->priv_destructor   = rtw_ndev_destructor;
+#elif
 	mon_ndev->destructor = rtw_ndev_destructor;
+#endif
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 29))
 	mon_ndev->netdev_ops = &rtw_cfg80211_monitor_if_ops;
