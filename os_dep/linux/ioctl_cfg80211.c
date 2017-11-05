@@ -1738,9 +1738,13 @@ enum nl80211_iftype {
 	NL80211_IFTYPE_MAX = NUM_NL80211_IFTYPES - 1
 };
 #endif
+
 static int cfg80211_rtw_change_iface(struct wiphy *wiphy,
                                      struct net_device *ndev,
-                                     enum nl80211_iftype type, u32 *flags,
+                                     enum nl80211_iftype type,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
+                                     u32 *flags,
+#endif
                                      struct vif_params *params) {
 	enum nl80211_iftype old_type;
 	NDIS_802_11_NETWORK_INFRASTRUCTURE networkType;
@@ -3688,7 +3692,11 @@ cfg80211_rtw_add_virtual_intf(
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0))
     unsigned char name_assign_type,
 #endif
-    enum nl80211_iftype type, u32 *flags, struct vif_params *params) {
+    enum nl80211_iftype type,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
+    u32 *flags,
+#endif
+    struct vif_params *params) {
 	int ret = 0;
 	struct net_device *ndev = NULL;
 	_adapter *padapter = wiphy_to_adapter(wiphy);
@@ -6156,6 +6164,9 @@ static void rtw_cfg80211_preinit_wiphy(_adapter *adapter, struct wiphy *wiphy) {
 #endif
 }
 
+/* Member `(*change_virtual_intf)()` and `(*add_virtual_intf)()` were changed by Linux kernel [818a986e4ebacea2020622e48c8bc04b7f500d89].
+ * See https://github.com/torvalds/linux/commit/818a986e4ebacea2020622e48c8bc04b7f500d89
+ */
 static struct cfg80211_ops rtw_cfg80211_ops = {
 	.change_virtual_intf = cfg80211_rtw_change_iface,
 	.add_key = cfg80211_rtw_add_key,
