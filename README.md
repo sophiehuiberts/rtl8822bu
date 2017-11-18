@@ -1,4 +1,4 @@
-# Reaktek 8822BU driver for Linux
+# Realtek 8822BU driver for Linux
 
 Driver for 802.11ac USB Adapter with RTL8822BU chipset.
 
@@ -18,14 +18,14 @@ $ sudo apt install dpkg-dev
 $ sudo apt install build-essential libc6-dev linux-headers-`dpkg-architecture -qDEB_HOST_ARCH`
 ```
 
-If you use the other distros, consult your distro how to install the kernel sources and build an <u>external</u> module. And it would be appriciated if you would tell me the way.
+On the other distros, please refer their build instruction for kernel modules (Because I don't know so much any other than Debian/Ubuntu). And it would be appriciated if you would tell me the way.
 
 
 ## Build and install.
 
 Currently tested with Linux kernel 4.13.10 on X86_64 platform **only**.
 
-To do complete build, you have to retrieve source and run `make`.
+To build, you have to retrieve source and run `make`.
 If via Git, do following:
 
 ```sh
