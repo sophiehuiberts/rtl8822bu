@@ -1,4 +1,4 @@
-# Reaktek 8822BU driver for Linux
+# Realtek 8822BU driver for Linux
 
 Driver for 802.11ac USB Adapter with RTL8822BU chipset.
 
