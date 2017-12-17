@@ -23,7 +23,7 @@ On the other distros, please refer their build instruction for kernel modules (B
 
 ## Build and install.
 
-Currently tested with Linux kernel 4.13.10 on X86_64 platform **only**.
+Currently tested with Linux kernel 4.13.10 and 4.14.2 on X86_64 platform **only**.
 
 To build, you have to retrieve source and run `make`.
 If via Git, do following:
@@ -38,9 +38,9 @@ $ sudo make
 Or via tarball, do:
 
 ```sh
-$ curl -LO https://github.com/FomalhautWeisszwerg/rtl8822bu/archive/release-for-linux-4.13.tar.gz
-$ tar -xf release-for-linux-4.13.tar.gz
-$ cd rtl8822bu-release-for-linux-4.13/
+$ curl -LO https://github.com/FomalhautWeisszwerg/rtl8822bu/archive/release-for-linux-4.14.tar.gz
+$ tar -xf release-for-linux-4.14.tar.gz
+$ cd rtl8822bu-release-for-linux-4.14/
 $ make
 $ sudo make install
 ```
