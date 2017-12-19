@@ -32,7 +32,7 @@ If via Git, do following:
 $ git clone https://github.com/FomalhautWeisszwerg/rtl8822bu.git
 $ cd rtl8822bu
 $ make
-$ sudo make
+$ sudo make install
 ```
 
 Or via tarball, do:
