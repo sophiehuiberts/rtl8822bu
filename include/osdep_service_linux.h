@@ -251,12 +251,52 @@ __inline static void rtw_list_delete(_list *plist) {
 
 #define RTW_TIMER_HDL_ARGS void *FunctionContext
 
-__inline static void _init_timer(_timer *ptimer, _nic_hdl nic_hdl, void *pfunc, void *cntx) {
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+__inline static void _init_timer(_timer *ptimer, _nic_hdl nic_hdl, void *pfunc, void *cntx)
+#else
+__inline static void _init_timer(_timer *ptimer, _nic_hdl nic_hdl, void (*pfunc)(struct timer_list *), void *cntx)
+#endif
+{
+	/* Description:
+	 *     Prepare a timer for the first use.
+	 *
+	 * @ptimer:
+	 *     A pointer to `struct timer_list` object in question.
+	 *
+	 * @nic_hdl:
+	 *     A pointer to `struct net_device` object.
+	 *     Currently, not used in this function.
+	 *
+	 * @pfunc:
+	 *     In < linux-4.15, a pointer `void (*)(unsigned long)`.
+	 *     The function was called with @cntx when the timer expires.
+	 *
+	 *     In >= linux-4.15, a pointer `void (*)(struct timer_list *)`.
+	 *
+	 * @cntx:
+	 *     In < Linux-4.15, An argument passed to @pfunc when the function is called.
+	 *     In >= Linux-4.15, ...
+	 *
+	 * Note:
+	 *     Since Linux-4.15, the "timer" API has been changed.
+	 *     See https://github.com/torvalds/linux/commit/844056fd74ebdd826bd23a7d989597e15f478acb#diff-ba8897e9349509c7ca4d37b0704bee9c
+	 */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	/* setup_timer(ptimer, pfunc,(u32)cntx);	 */
-	ptimer->function = pfunc;
+	ptimer->function = (void (*)(unsigned long))pfunc;
 	ptimer->data = (unsigned long)cntx;
 	init_timer(ptimer);
+#else
+	// tree wide: init_timer() -> setup_timer()
+	// https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=b9eaf18722221ef8b2bd6a67240ebe668622152a
+	//setup_timer(ptimer, pfunc, (unsigned long)cntx);
+	// tree wide: setup_timer() -> timer_setup()
+	// https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=e99e88a9d2b067465adaa9c111ada99a041bef9a
+	timer_setup(ptimer, pfunc, 0);
+#endif
 }
+
 
 __inline static void _set_timer(_timer *ptimer, u32 delay_time) {
 	mod_timer(ptimer , (jiffies + (delay_time * HZ / 1000)));
