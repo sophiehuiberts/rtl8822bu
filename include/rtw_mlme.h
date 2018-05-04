@@ -290,14 +290,14 @@ struct scan_limit_info {
 
 #ifdef CONFIG_IOCTL_CFG80211
 struct cfg80211_wifidirect_info {
-	_timer					remain_on_ch_timer;
-	u8						restore_channel;
-	struct ieee80211_channel	remain_on_ch_channel;
-	enum nl80211_channel_type	remain_on_ch_type;
-	ATOMIC_T ro_ch_cookie_gen;
-	u64 remain_on_ch_cookie;
-	bool is_ro_ch;
-	u32 last_ro_ch_time; /* this will be updated at the beginning and end of ro_ch */
+	_timer                    remain_on_ch_timer;
+	u8                        restore_channel;
+	struct ieee80211_channel  remain_on_ch_channel;
+	enum nl80211_channel_type remain_on_ch_type;
+	ATOMIC_T                  ro_ch_cookie_gen;
+	u64                       remain_on_ch_cookie;
+	bool                      is_ro_ch;
+	u32                       last_ro_ch_time; /* this will be updated at the beginning and end of ro_ch */
 };
 #endif /* CONFIG_IOCTL_CFG80211 */
 
@@ -801,8 +801,13 @@ extern void rtw_wmm_event_callback(PADAPTER padapter, u8 *pbuf);
 #ifdef CONFIG_IEEE80211W
 	void rtw_sta_timeout_event_callback(_adapter *adapter, u8 *pbuf);
 #endif /* CONFIG_IEEE80211W */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 extern void rtw_join_timeout_handler(RTW_TIMER_HDL_ARGS);
 extern void _rtw_scan_timeout_handler(RTW_TIMER_HDL_ARGS);
+#else
+extern void rtw_join_timeout_handler(struct timer_list* timers);
+extern void _rtw_scan_timeout_handler(struct timer_list* timers);
+#endif // LINUX_VERSION_CODE
 
 thread_return event_thread(thread_context context);
 

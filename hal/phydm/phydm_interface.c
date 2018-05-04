@@ -561,6 +561,7 @@ ODM_SetTimer(
 
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 VOID
 ODM_InitializeTimer(
 	IN 	PDM_ODM_T			pDM_Odm,
@@ -581,8 +582,9 @@ ODM_InitializeTimer(
 #elif(DM_ODM_SUPPORT_TYPE & ODM_WIN)
 	PADAPTER Adapter = pDM_Odm->Adapter;
 	PlatformInitializeTimer(Adapter, pTimer, CallBackFunc,pContext,szID);
-#endif	
+#endif
 }
+#endif
 
 
 VOID

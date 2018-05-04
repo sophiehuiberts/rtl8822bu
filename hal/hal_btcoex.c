@@ -543,6 +543,7 @@ static u8 _is_btfwver_valid(PBTC_COEXIST pBtCoexist, u16 btfwver)
 	return _TRUE;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 static void _btmpoper_timer_hdl(void *p)
 {
 	if (GLBtcBtMpRptWait) {
@@ -550,6 +551,15 @@ static void _btmpoper_timer_hdl(void *p)
 		_rtw_up_sema(&GLBtcBtMpRptSema);
 	}
 }
+#else // Linux >= 4.15
+static void _btmpoper_timer_hdl(struct timer_list* timers)
+{
+	if (GLBtcBtMpRptWait) {
+		GLBtcBtMpRptWait = 0;
+		_rtw_up_sema(&GLBtcBtMpRptSema);
+	}
+}
+#endif // LINUX_VERSION_CODE
 
 /*
  * !IMPORTANT!
@@ -2180,7 +2190,11 @@ u8 EXhalbtcoutsrc_InitlizeVariables(void *padapter)
 	/* BT Control H2C/C2H*/
 	GLBtcBtMpOperSeq = 0;
 	_rtw_mutex_init(&GLBtcBtMpOperLock);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_init_timer(&GLBtcBtMpOperTimer, ((PADAPTER)padapter)->pnetdev, _btmpoper_timer_hdl, pBtCoexist);
+#else // Linux >= 4.15
+	timer_setup(&GLBtcBtMpOperTimer, _btmpoper_timer_hdl, 0);
+#endif // LINUX_VERSION_CODE
 	_rtw_init_sema(&GLBtcBtMpRptSema, 0);
 	GLBtcBtMpRptSeq = 0;
 	GLBtcBtMpRptStatus = 0;

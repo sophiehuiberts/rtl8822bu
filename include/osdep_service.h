@@ -316,7 +316,9 @@ extern u32	rtw_atoi(u8 *s);
 extern void rtw_yield_os(void);
 
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 extern void rtw_init_timer(_timer *ptimer, void *padapter, void *pfunc);
+#endif // LINUX_VERSION_CODE
 
 
 __inline static unsigned char _cancel_timer_ex(_timer *ptimer)

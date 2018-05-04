@@ -3417,9 +3417,19 @@ exit:
 	return res;
 }
 
-void rtw_dfs_master_timer_hdl(RTW_TIMER_HDL_ARGS)
-{
+void rtw_dfs_master_timer_hdl(
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+	// alias of "void* FunctionContext" defined in ../include/osdep_service_linux.h
+	RTW_TIMER_HDL_ARGS
+#else
+	struct timer_list* timers
+#endif // LINUX_VERSION_CODE
+){
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_adapter *adapter = (_adapter *)FunctionContext;
+#else
+	_adapter* adapter = from_timer(adapter, timers, mlmepriv.dfs_master_timer);
+#endif // LINUX_VERSION_CODE
 
 	rtw_dfs_master_cmd(adapter, _TRUE);
 }

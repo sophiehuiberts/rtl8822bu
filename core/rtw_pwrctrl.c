@@ -393,12 +393,22 @@ exit:
 	return;
 }
 
-void pwr_state_check_handler(RTW_TIMER_HDL_ARGS);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void pwr_state_check_handler(RTW_TIMER_HDL_ARGS)
 {
+	// RTW_TIMER_HDL_ARGS is defined as 'void* FunctionContext' in include/osdep_service_linux.h
 	_adapter *padapter = (_adapter *)FunctionContext;
 	rtw_ps_cmd(padapter);
 }
+#else // Linux >= 4.15
+void pwr_state_check_handler(struct timer_list* timers)
+{
+	// xxx TODO XXX
+	// Retrieve an address to an _ADAPTER object.
+	_adapter* padapter = from_timer(padapter, timers,
+	rtw_ps_cmd(padapter);
+}
+#endif // LINUX_VERSION_CODE
 
 #ifdef CONFIG_LPS
 void	traffic_check_for_leave_lps(PADAPTER padapter, u8 tx, u32 tx_packets)
@@ -1964,6 +1974,7 @@ void rtw_unregister_evt_alive(PADAPTER padapter)
 	static void resume_workitem_callback(struct work_struct *work);
 #endif /* CONFIG_RESUME_IN_WORKQUEUE */
 
+
 void rtw_init_pwrctrl_priv(PADAPTER padapter)
 {
 	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
@@ -2037,7 +2048,12 @@ void rtw_init_pwrctrl_priv(PADAPTER padapter)
 #endif /* CONFIG_LPS_RPWM_TIMER */
 #endif /* CONFIG_LPS_LCLK */
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	rtw_init_timer(&pwrctrlpriv->pwr_state_check_timer, padapter, pwr_state_check_handler);
+#else // Linux >= 4.15
+	// 'pwr_state_check_timer' is a member of 'struct pwrctrl_priv' defined in include/rtw_pwrctrl.h
+	timer_setup(&pwrctrlpriv->pwr_state_check_timer, pwr_state_check_handler, 0);
+#endif // LINUX_VERSION_CODE
 
 	pwrctrlpriv->wowlan_mode = _FALSE;
 	pwrctrlpriv->wowlan_ap_mode = _FALSE;

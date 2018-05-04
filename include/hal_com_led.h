@@ -373,7 +373,12 @@ struct led_priv {
 			(adapter)->ledpriv.SwLedOff((adapter), (pLed)); \
 	} while (0)
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void BlinkTimerCallback(void *data);
+#else // Linux >= 4.15
+void BlinkTimerCallback(struct timer_list* timers);
+#endif // LINUX_VERSION_CODE
+
 void BlinkWorkItemCallback(_workitem *work);
 
 void ResetLedStatus(PLED_DATA pLed);

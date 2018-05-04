@@ -799,17 +799,28 @@ void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 #endif
 
 }
-void _rtw_reordering_ctrl_timeout_handler(void *FunctionContext);
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 void _rtw_reordering_ctrl_timeout_handler(void *FunctionContext)
 {
 	struct recv_reorder_ctrl *preorder_ctrl = (struct recv_reorder_ctrl *)FunctionContext;
 	rtw_reordering_ctrl_timeout_handler(preorder_ctrl);
 }
+#else // Linux >= 4.15
+void _rtw_reordering_ctrl_timeout_handler(struct timer_list* timers)
+{
+	// struct recv_reorder_ctrl defined in ../../include/rtw_recv.h
+	struct recv_reorder_ctrl* preorder_ctrl = from_timer(preorder_ctrl, timers, reordering_ctrl_timer);
+	rtw_reordering_ctrl_timeout_handler(preorder_ctrl);
+}
+#endif // LINUX_VERSION_CODE
 
 void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl)
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 	_adapter *padapter = preorder_ctrl->padapter;
-
 	_init_timer(&(preorder_ctrl->reordering_ctrl_timer), padapter->pnetdev, _rtw_reordering_ctrl_timeout_handler, preorder_ctrl);
-
+#else // Linux >= 4.15
+	timer_setup(&(preorder_ctrl->reordering_ctrl_timer), _rtw_reordering_ctrl_timeout_handler, 0);
+#endif // LINUX_VERSION_CODE
 }
