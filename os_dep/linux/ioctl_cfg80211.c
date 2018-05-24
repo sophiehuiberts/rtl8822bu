@@ -765,7 +765,13 @@ check_bss:
 		RTW_INFO(FUNC_ADPT_FMT" call cfg80211_roamed\n", FUNC_ADPT_ARG(padapter));
 		cfg80211_roamed(padapter->pnetdev
 #if (KERNEL_VERSION(2, 6, 39) < LINUX_VERSION_CODE && LINUX_VERSION_CODE < KERNEL_VERSION(4, 13, 0)) || defined(COMPAT_KERNEL_RELEASE)
+		                , cur_network->network.MacAddress
 		                , notify_channel
+		                , pmlmepriv->assoc_req + sizeof(struct rtw_ieee80211_hdr_3addr) + 2
+		                , pmlmepriv->assoc_req_len - sizeof(struct rtw_ieee80211_hdr_3addr) - 2
+		                , pmlmepriv->assoc_rsp + sizeof(struct rtw_ieee80211_hdr_3addr) + 6
+		                , pmlmepriv->assoc_rsp_len - sizeof(struct rtw_ieee80211_hdr_3addr) - 6
+		                , GFP_ATOMIC);
 #elif KERNEL_VERSION(4, 12, 0) <= LINUX_VERSION_CODE
 		                , &roam_info
 		                , GFP_ATOMIC);
@@ -3624,7 +3630,7 @@ static int rtw_cfg80211_add_monitor_if(_adapter *padapter, char *name, struct ne
 	 */
 	mon_ndev->needs_free_netdev = false;
 	mon_ndev->priv_destructor   = rtw_ndev_destructor;
-#elif
+#else
 	mon_ndev->destructor = rtw_ndev_destructor;
 #endif
 
