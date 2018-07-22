@@ -156,7 +156,6 @@ static struct usb_device_id rtw_usb_id_tbl[] = {
 	{USB_DEVICE(0x0789, 0x016E), .driver_info = RTL8812}, /* Logitec - Edimax */
 	{USB_DEVICE(0x0409, 0x0408), .driver_info = RTL8812}, /* NEC - */
 	{USB_DEVICE(0x0B05, 0x17D2), .driver_info = RTL8812}, /* ASUS - Edimax */
-	{USB_DEVICE(0x0B05, 0x184C), .driver_info = RTL8812}, /* ASUS - Edimax */
 	{USB_DEVICE(0x0E66, 0x0022), .driver_info = RTL8812}, /* HAWKING - Edimax */
 	{USB_DEVICE(0x0586, 0x3426), .driver_info = RTL8812}, /* ZyXEL - */
 	{USB_DEVICE(0x2001, 0x3313), .driver_info = RTL8812}, /* D-Link - ALPHA */
@@ -221,7 +220,8 @@ static struct usb_device_id rtw_usb_id_tbl[] = {
 
 #ifdef CONFIG_RTL8822B
 	/*=== Realtek demoboard ===*/
-	{USB_DEVICE(0x0B05, 0x1812), .driver_info = RTL8812}, /* ASUS - Edimax */
+	{USB_DEVICE(0x0B05, 0x1812), .driver_info = RTL8822B}, /* ASUS - Edimax */
+	{USB_DEVICE(0x0b05, 0x184c), .driver_info = RTL8822B}, /* ASUS - Edimax */
 	{USB_DEVICE(0x7392, 0xB822), .driver_info = RTL8822B}, /* Edimax - EW-7822ULC */
 	{USB_DEVICE(0x7392, 0xC822), .driver_info = RTL8822B}, /* Edimax - EW-7822UTC */
 	{USB_DEVICE(0x13B1, 0x0043), .driver_info = RTL8822B}, /* Linksys - WUSB6400M */

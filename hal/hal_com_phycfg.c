@@ -661,7 +661,7 @@ PHY_GetRateValuesOfTxPowerByRate(
 
 	case 0xC4C:
 	case 0xE4C:
-	case 0x184C:
+	case 0x184c:
 	case 0x1a4C:
 		Rate[0] = MGN_VHT2SS_MCS6;
 		Rate[1] = MGN_VHT2SS_MCS7;
